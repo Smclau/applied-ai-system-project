@@ -9,3 +9,11 @@ id,title,artist,genre,mood,energy,tempo_bpm,valence,danceability,acousticness
 8,Night Drive Loop,Neon Echo,synthwave,moody,0.75,110,0.49,0.73,0.22
 9,Focus Flow,LoRoom,lofi,focused,0.40,80,0.59,0.60,0.78
 10,Rooftop Lights,Indigo Parade,indie pop,happy,0.76,124,0.81,0.82,0.35
+11,Concrete Jungle,StreetMind,hip-hop,energetic,0.85,95,0.72,0.91,0.08
+12,Rainy Window,Clara Voss,classical,sad,0.22,58,0.31,0.28,0.97
+13,Ember Trail,The Pine Collective,folk,relaxed,0.44,104,0.74,0.52,0.88
+14,Circuit Breaker,XVLT,metal,angry,0.97,168,0.30,0.55,0.04
+15,Golden Hour,Solé,r&b,dreamy,0.61,88,0.78,0.76,0.42
+16,Pulse Wave,Dataform,electronic,energetic,0.88,140,0.63,0.94,0.06
+17,Hollow Roads,Maren Veil,folk,sad,0.31,96,0.28,0.44,0.91
+18,Deep Blue,Aqua Drift,ambient,dreamy,0.33,65,0.69,0.38,0.85

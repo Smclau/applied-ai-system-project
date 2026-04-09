@@ -13,7 +13,7 @@ Your goal is to:
 
 Replace this paragraph with your own summary of what your version does.
 
----
+My version will prioritize content-based filtering (accustic and musical attributes of the song), along with using behavioral data (from users) in order to decide what songs to reccomend. We can assume that if they make a paylist they would like each song to match the vibe, thus a slow song should be recommended if the music in that playlist are also slow. Same with high energy songs, and because not every song of a single ganre is alike. We can still allow them to give behavioral input and get recommended something different that they might enjoy. Which leads me to approach with a Hybrid system upon more reflection. Since it will mix attributes. This will fit for a future work section perhaps, since it is a little ambitious for this project.
 
 ## How The System Works
 
@@ -23,11 +23,26 @@ Some prompts to answer:
 
 - What features does each `Song` use in your system
   - For example: genre, mood, energy, tempo
+  Under song we would put in data such as its ID, name, the creator and the descriptions that the algorithm will use to sort and organize where it compares with other songs
 - What information does your `UserProfile` store
+The UserProfile stores the data about the user that profiles what music they listen to the most, their taste, and allows the algorithm to recommend based on current taste as well as direct user data such as hours listened to genre, or spent listening to a specific mood.
 - How does your `Recommender` compute a score for each song
+The recommender computes a score fore each song based on
+-Energy
+-Valence Procimity
+-Mood
+-Genre Match
+-And Acousticness 
+
+the Final Score is the Weighted Sum
 - How do you choose which songs to recommend
 
 You can include a simple diagram or bullet list if helpful.
+
+All 18 songs are sorted by score, highest to lowest
+The top k are returned (default k=5)
+Ties are broken by sort order (stable sort — earlier in the CSV wins)
+
 
 ---
 
@@ -135,8 +150,19 @@ Example:
 Describe your scoring logic in plain language.
 
 - What features of each song does it consider
+Energy - High vs Low energy song. 
+Emotional tone - Is the songs emotional brightness close to what the mood suggest.
+Mood - How similar is the songs mood to the users
+Genre- Does the song belong to the genre?
+Acousticness - Is the song as acoustic or electronic as user wants.
 - What information about the user does it use
+The system uses favorite genre, favorite mood, target energy and target accoustiness in order to personalize the users experience and link them to the song data.
 - How does it turn those into a number
+Energy Proximity - Subtracts the difference between songs energy and the target. A perfect match = 35
+Valence Prox - Same idea but for emotional brightness
+Mood Similarity - Every mood sits at a position on an invisible mao defeined y energy and emotion
+Ganre match - yes or no, is it the correct genre. if not, then 0 points earned.
+Acousticness - Same as energy, worth 5 points
 
 Try to avoid code in this section, treat it like an explanation to a non programmer.
 
