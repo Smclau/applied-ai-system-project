@@ -2,12 +2,14 @@
 Music Recommender — command-line runner.
 
 Modes:
-  default      Run all hardcoded profiles across all scoring strategies (batch output).
+  default        Run all hardcoded profiles across all scoring strategies (batch output).
   --interactive  Claude-powered agent: describe what you want in plain English.
+  --evaluate     Reliability report: determinism, score spread, strategy agreement.
 
 Usage:
-  python -m src.main                  # batch mode
-  python -m src.main --interactive    # agent mode (requires ANTHROPIC_API_KEY)
+  python3 -m src.main                  # batch mode
+  python3 -m src.main --interactive    # agent mode (requires ANTHROPIC_API_KEY)
+  python3 -m src.main --evaluate       # reliability evaluation
 """
 
 import argparse
@@ -44,51 +46,54 @@ def _print_recommendations(profile_name: str, strategy: str, recommendations: li
     print()
 
 
+_PROFILES = {
+    "Chill Lofi Session": {
+        "favorite_genre":      "lofi",
+        "favorite_mood":       "chill",
+        "target_energy":       0.38,
+        "target_acousticness": 0.75,
+    },
+    "Focused Lofi Session": {
+        "favorite_genre":      "lofi",
+        "favorite_mood":       "focused",
+        "target_energy":       0.42,
+        "target_acousticness": 0.72,
+    },
+    "Relaxed Lofi Session": {
+        "favorite_genre":      "lofi",
+        "favorite_mood":       "relaxed",
+        "target_energy":       0.34,
+        "target_acousticness": 0.82,
+    },
+    "Pop Happy Session": {
+        "favorite_genre":      "pop",
+        "favorite_mood":       "happy",
+        "target_energy":       0.80,
+        "target_acousticness": 0.20,
+    },
+    "High-Energy Pop": {
+        "favorite_genre":      "pop",
+        "favorite_mood":       "energetic",
+        "target_energy":       0.90,
+        "target_acousticness": 0.08,
+    },
+    "Deep Intense Rock": {
+        "favorite_genre":      "rock",
+        "favorite_mood":       "intense",
+        "target_energy":       0.92,
+        "target_acousticness": 0.10,
+    },
+    "Sad Acoustic Folk": {
+        "favorite_genre":      "folk",
+        "favorite_mood":       "sad",
+        "target_energy":       0.30,
+        "target_acousticness": 0.90,
+    },
+}
+
+
 def run_batch(songs: list) -> None:
-    profiles = {
-        "Chill Lofi Session": {
-            "favorite_genre":      "lofi",
-            "favorite_mood":       "chill",
-            "target_energy":       0.38,
-            "target_acousticness": 0.75,
-        },
-        "Focused Lofi Session": {
-            "favorite_genre":      "lofi",
-            "favorite_mood":       "focused",
-            "target_energy":       0.42,
-            "target_acousticness": 0.72,
-        },
-        "Relaxed Lofi Session": {
-            "favorite_genre":      "lofi",
-            "favorite_mood":       "relaxed",
-            "target_energy":       0.34,
-            "target_acousticness": 0.82,
-        },
-        "Pop Happy Session": {
-            "favorite_genre":      "pop",
-            "favorite_mood":       "happy",
-            "target_energy":       0.80,
-            "target_acousticness": 0.20,
-        },
-        "High-Energy Pop": {
-            "favorite_genre":      "pop",
-            "favorite_mood":       "energetic",
-            "target_energy":       0.90,
-            "target_acousticness": 0.08,
-        },
-        "Deep Intense Rock": {
-            "favorite_genre":      "rock",
-            "favorite_mood":       "intense",
-            "target_energy":       0.92,
-            "target_acousticness": 0.10,
-        },
-        "Sad Acoustic Folk": {
-            "favorite_genre":      "folk",
-            "favorite_mood":       "sad",
-            "target_energy":       0.30,
-            "target_acousticness": 0.90,
-        },
-    }
+    profiles = _PROFILES
 
     for profile_name, user_prefs in profiles.items():
         for strategy in ["energy-first", "genre-first", "mood-first"]:
@@ -152,12 +157,20 @@ def main() -> None:
         action="store_true",
         help="Agent mode: describe what you want in plain English (requires ANTHROPIC_API_KEY)",
     )
+    parser.add_argument(
+        "--evaluate",
+        action="store_true",
+        help="Run reliability evaluation: determinism, score spread, and strategy agreement",
+    )
     args = parser.parse_args()
 
     songs = load_songs("data/songs.csv")
 
     if args.interactive:
         run_interactive(songs)
+    elif args.evaluate:
+        from .evaluator import run_full_evaluation
+        run_full_evaluation(_PROFILES, songs)
     else:
         run_batch(songs)
 
