@@ -1,21 +1,50 @@
 """
-Command line runner for the Music Recommender Simulation.
+Music Recommender — command-line runner.
 
-This file helps you quickly run and test your recommender.
+Modes:
+  default      Run all hardcoded profiles across all scoring strategies (batch output).
+  --interactive  Claude-powered agent: describe what you want in plain English.
 
-You will implement the functions in recommender.py:
-- load_songs
-- score_song
-- recommend_songs
+Usage:
+  python -m src.main                  # batch mode
+  python -m src.main --interactive    # agent mode (requires ANTHROPIC_API_KEY)
 """
 
+import argparse
+import logging
+import os
+import sys
+
 from tabulate import tabulate
+
 from .recommender import load_songs, recommend_songs
 
 
-def main() -> None:
-    songs = load_songs("data/songs.csv") 
+def setup_logging() -> None:
+    os.makedirs("logs", exist_ok=True)
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s %(name)s — %(message)s",
+        handlers=[
+            logging.FileHandler("logs/recommender.log"),
+            logging.StreamHandler(sys.stdout),
+        ],
+    )
 
+
+def _print_recommendations(profile_name: str, strategy: str, recommendations: list) -> None:
+    print(f"\n{'='*65}")
+    print(f"  {profile_name}  [{strategy}]")
+    print(f"{'='*65}")
+    rows = [
+        [rank, song["title"], song["artist"], f"{score:.2f}", explanation]
+        for rank, (song, score, explanation) in enumerate(recommendations, 1)
+    ]
+    print(tabulate(rows, headers=["#", "Title", "Artist", "Score", "Why"], tablefmt="rounded_outline"))
+    print()
+
+
+def run_batch(songs: list) -> None:
     profiles = {
         "Chill Lofi Session": {
             "favorite_genre":      "lofi",
@@ -64,15 +93,73 @@ def main() -> None:
     for profile_name, user_prefs in profiles.items():
         for strategy in ["energy-first", "genre-first", "mood-first"]:
             recommendations = recommend_songs(user_prefs, songs, k=5, strategy=strategy)
-            print(f"\n{'='*65}")
-            print(f"  {profile_name}  [{strategy}]")
-            print(f"{'='*65}")
-            rows = [
-                [rank, song["title"], song["artist"], f"{score:.2f}", explanation]
-                for rank, (song, score, explanation) in enumerate(recommendations, 1)
-            ]
-            print(tabulate(rows, headers=["#", "Title", "Artist", "Score", "Why"], tablefmt="rounded_outline"))
-            print()
+            _print_recommendations(profile_name, strategy, recommendations)
+
+
+def run_interactive(songs: list) -> None:
+    from .agent import parse_user_intent, explain_recommendations
+
+    if not os.environ.get("ANTHROPIC_API_KEY"):
+        print("Error: ANTHROPIC_API_KEY environment variable is not set.")
+        print("Set it with: export ANTHROPIC_API_KEY=your_key_here")
+        sys.exit(1)
+
+    print("\nMusic Recommender (AI Mode)")
+    print("Describe what you want to listen to. Type 'quit' to exit.\n")
+
+    log = logging.getLogger(__name__)
+
+    while True:
+        try:
+            user_input = input("You: ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print("\nGoodbye.")
+            break
+
+        if not user_input:
+            continue
+        if user_input.lower() in ("quit", "exit", "q"):
+            print("Goodbye.")
+            break
+
+        try:
+            profile = parse_user_intent(user_input)
+            print(
+                f"\nProfile detected: {profile['favorite_mood']} {profile['favorite_genre']} "
+                f"(energy {profile['target_energy']:.2f}, acousticness {profile['target_acousticness']:.2f})"
+            )
+
+            recommendations = recommend_songs(profile, songs, k=5)
+            _print_recommendations("Your Request", "energy-first", recommendations)
+
+            narrative = explain_recommendations(user_input, recommendations)
+            print(f"Curator's note: {narrative}\n")
+
+        except ValueError as exc:
+            log.error("Profile parsing failed: %s", exc)
+            print(f"Sorry, I couldn't interpret that. Try describing the mood, energy, or genre you want.\n")
+        except Exception as exc:
+            log.error("Unexpected error: %s", exc, exc_info=True)
+            print(f"Something went wrong — check logs/recommender.log for details.\n")
+
+
+def main() -> None:
+    setup_logging()
+
+    parser = argparse.ArgumentParser(description="Music Recommender")
+    parser.add_argument(
+        "--interactive",
+        action="store_true",
+        help="Agent mode: describe what you want in plain English (requires ANTHROPIC_API_KEY)",
+    )
+    args = parser.parse_args()
+
+    songs = load_songs("data/songs.csv")
+
+    if args.interactive:
+        run_interactive(songs)
+    else:
+        run_batch(songs)
 
 
 if __name__ == "__main__":

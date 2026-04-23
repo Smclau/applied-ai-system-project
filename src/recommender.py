@@ -1,5 +1,8 @@
+import logging
 from typing import List, Dict, Tuple, Optional
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
+
+logger = logging.getLogger(__name__)
 
 @dataclass
 class Song:
@@ -40,13 +43,27 @@ class Recommender:
 
     def recommend(self, user: UserProfile, k: int = 5) -> List[Song]:
         """Return the top k songs from the catalog for the given user profile."""
-        # TODO: Implement recommendation logic
-        return self.songs[:k]
+        user_prefs = {
+            "favorite_genre": user.favorite_genre,
+            "favorite_mood": user.favorite_mood,
+            "target_energy": user.target_energy,
+            "target_acousticness": 0.75 if user.likes_acoustic else 0.25,
+        }
+        song_dicts = [asdict(s) for s in self.songs]
+        results = recommend_songs(user_prefs, song_dicts, k=k)
+        ids = {s["id"] for s, _, _ in results}
+        return [s for s in self.songs if s.id in ids]
 
     def explain_recommendation(self, user: UserProfile, song: Song) -> str:
         """Return a plain-English explanation of why a song was recommended to a user."""
-        # TODO: Implement explanation logic
-        return "Explanation placeholder"
+        user_prefs = {
+            "favorite_genre": user.favorite_genre,
+            "favorite_mood": user.favorite_mood,
+            "target_energy": user.target_energy,
+            "target_acousticness": 0.75 if user.likes_acoustic else 0.25,
+        }
+        _, explanation = _score_song(asdict(song), user_prefs)
+        return explanation
 
 def load_songs(csv_path: str) -> List[Dict]:
     """
@@ -64,6 +81,7 @@ def load_songs(csv_path: str) -> List[Dict]:
             row["danceability"]  = float(row["danceability"])
             row["acousticness"]  = float(row["acousticness"])
             songs.append(row)
+    logger.info("Loaded %d songs from %s", len(songs), csv_path)
     return songs
 
 # Genres that earn partial credit (0.5) when they don't exactly match the user's genre
@@ -235,6 +253,12 @@ def recommend_songs(user_prefs: Dict, songs: List[Dict], k: int = 5, strategy: s
     Functional implementation of the recommendation logic.
     Required by src/main.py
     """
+    logger.debug(
+        "recommend_songs | strategy=%s k=%d genre=%s mood=%s energy=%.2f",
+        strategy, k,
+        user_prefs.get("favorite_genre"), user_prefs.get("favorite_mood"),
+        user_prefs.get("target_energy", 0),
+    )
     scorer = STRATEGIES.get(strategy, _score_song)
     scored = [(scorer(song, user_prefs), song) for song in songs]
     scored.sort(key=lambda x: x[0][0], reverse=True)
@@ -253,4 +277,9 @@ def recommend_songs(user_prefs: Dict, songs: List[Dict], k: int = 5, strategy: s
         seen_clusters[cluster] = seen_clusters.get(cluster, 0) + 1
 
     selected.sort(key=lambda x: x[1], reverse=True)
-    return selected[:k]
+    top = selected[:k]
+    logger.info(
+        "Top %d results | #1: %r (%.4f)",
+        len(top), top[0][0].get("title") if top else None, top[0][1] if top else 0,
+    )
+    return top
