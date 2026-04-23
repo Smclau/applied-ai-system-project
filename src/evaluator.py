@@ -10,7 +10,7 @@ Run via:  python3 -m src.main --evaluate
 """
 
 import logging
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 from tabulate import tabulate
 

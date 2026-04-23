@@ -11,7 +11,6 @@ interactive queries only pay the token cost once per 5-minute cache window.
 
 import json
 import logging
-import os
 from typing import List, Tuple, Dict
 
 from anthropic import Anthropic

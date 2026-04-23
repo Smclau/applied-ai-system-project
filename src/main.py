@@ -142,10 +142,10 @@ def run_interactive(songs: list) -> None:
 
         except ValueError as exc:
             log.error("Profile parsing failed: %s", exc)
-            print(f"Sorry, I couldn't interpret that. Try describing the mood, energy, or genre you want.\n")
+            print("Sorry, I couldn't interpret that. Try describing the mood, energy, or genre you want.\n")
         except Exception as exc:
             log.error("Unexpected error: %s", exc, exc_info=True)
-            print(f"Something went wrong — check logs/recommender.log for details.\n")
+            print("Something went wrong — check logs/recommender.log for details.\n")
 
 
 def main() -> None:
