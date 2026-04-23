@@ -259,6 +259,8 @@ def recommend_songs(user_prefs: Dict, songs: List[Dict], k: int = 5, strategy: s
         user_prefs.get("favorite_genre"), user_prefs.get("favorite_mood"),
         user_prefs.get("target_energy", 0),
     )
+    if strategy not in STRATEGIES:
+        logger.warning("Unknown strategy %r — falling back to energy-first", strategy)
     scorer = STRATEGIES.get(strategy, _score_song)
     scored = [(scorer(song, user_prefs), song) for song in songs]
     scored.sort(key=lambda x: x[0][0], reverse=True)

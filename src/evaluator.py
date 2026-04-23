@@ -46,6 +46,8 @@ def check_score_spread(profile: Dict, songs: List[Dict]) -> float:
 
 def check_strategy_agreement(profile: Dict, songs: List[Dict], k: int = 5) -> float:
     """Return fraction of top-k songs that appear in ALL three strategy results."""
+    if k == 0:
+        return 0.0
     sets = []
     for strategy in STRATEGIES:
         ids = {s["id"] for s, _, _ in recommend_songs(profile, songs, k=k, strategy=strategy)}
