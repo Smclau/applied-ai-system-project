@@ -22,7 +22,7 @@
 
 **Why does it matter?**
 
-[his projects makes the trust in the system measurable by checking if the results are consistent and if a clear winnder emurges. If you can trust the system then it fails to be trustworthy.]
+This project makes trust in the system measurable by checking whether results are consistent, whether a clear winner emerges, and whether all three scoring strategies agree. A recommender is only useful if you can rely on it — this project makes that reliability visible.
 
 ---
 
@@ -212,3 +212,35 @@ for late-night concentration without being distracting.
 **What would you do differently or add next if you had more time?**
 
 [Given more time, the most valuable addition would be fully activating the Claude-powered agent layer so users can describe what they want to listen to in plain English rather than selecting from hardcoded profiles.]
+
+---
+
+## 9. Responsible AI Reflection
+
+**What are the limitations or biases in your system?**
+
+[The most significant limitation is the small catalog of our 18 songs. This means the system cannot serve or niche or underrepresented genres and moods. If a user's taste doesn't closely match what's in the catalog, the recommendations will feel forced. The predefined profiles aalso assume a fixed set of listener types, which introduces bias.]
+
+**Could your AI be misused, and how would you prevent that?**
+
+[Possibly if someone manually crafted the profiles or the song catalog to always push certain songs to the top. Manipulating the song catalog to consistenly promote certain artist or songs over others. To prevent this we can limit the number of custom profiles a user can create at once validate that song attributes fall within expected ranges is the catalog can't be loaded with inflated scores. ]
+
+**What surprised you while testing your AI's reliability?**
+
+[The most surprising finding was that all 7 profiles passed the determinism check with zero failures across 70 total runs. Before running the evaluator I wasm't certain the scoring engine would behave consistently every time. It confirmed that pure math based scoring has no hidden randomness, which is something I assumed but neber actually verified until the test proved it.]
+
+**Describe your collaboration with AI during this project. Identify one instance when the AI gave a helpful suggestion and one instance where its suggestion was flawed or incorrect.**
+
+[The collaboration with AI was hands on but Claude suggested the structure for the README, design the reliability evaluator with its three checks and provided the mermaid code for the system architecture. All of which were genuinely useful and saved significant time. One helpful instance was the evaluator design itself: the idea of combining determinism, score spreadm and stratefy agreement into a signle confidence rating was a suggestion that meaningfully improved the project. while it did catch the Zero Division Error at k=0, it did not proactively consider all the ways the system can break that I have given thought. On a larger scale project this could cause ripples that would potentially break everything a be more costly. Which reinforced the importance of human review and judgement.]
+
+---
+
+## 10. Portfolio and Video Walkthrough
+
+**GitHub Repository:** https://github.com/Smclau/applied-ai-system-project
+
+**Video Walkthrough (Loom):** [Add your Loom link here after recording]
+
+**Portfolio Reflection — What this project says about me as an AI engineer:**
+
+[Your answer here — write 3-4 sentences about what building this project shows about how you think about AI systems, reliability, and responsible development]
