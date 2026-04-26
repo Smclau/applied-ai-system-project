@@ -239,8 +239,8 @@ for late-night concentration without being distracting.
 
 **GitHub Repository:** https://github.com/Smclau/applied-ai-system-project
 
-**Video Walkthrough (Loom):** [Add your Loom link here after recording]
+**Video Walkthrough (Loom):** [Watch on Loom](https://www.loom.com/share/498717220d8f42d9960cc3840610c796)
 
 **Portfolio Reflection — What this project says about me as an AI engineer:**
 
-[Your answer here — write 3-4 sentences about what building this project shows about how you think about AI systems, reliability, and responsible development]
+[This project tells me I still have alot to learn but that I can meet a deadline and produce a result when one is expected of me. I learned how complex things that appear simple to a user can actually be. I found out that as an AI engineer I could learn how these systems work with others in order to make a product that is abstract enough that user can use without worrying about dealing with core logic while being readable and structured enough to where edits and fixes in code can be made efficiently. I am excited for coding to come but I know with AI this will only make things even more competetive for the Engineers, but also more fun as building becomes much easier to structure.]
