@@ -1,371 +1,246 @@
-# 🎵 Music Recommender Simulation
-
-## Project Summary
-
-In this project you will build and explain a small music recommender system.
-
-Your goal is to:
-
-- Represent songs and a user "taste profile" as data
-- Design a scoring rule that turns that data into recommendations
-- Evaluate what your system gets right and wrong
-- Reflect on how this mirrors real world AI recommenders
-
-Replace this paragraph with your own summary of what your version does.
-
-My version will prioritize content-based filtering (accustic and musical attributes of the song), along with using behavioral data (from users) in order to decide what songs to reccomend. We can assume that if they make a paylist they would like each song to match the vibe, thus a slow song should be recommended if the music in that playlist are also slow. Same with high energy songs, and because not every song of a single ganre is alike. We can still allow them to give behavioral input and get recommended something different that they might enjoy. Which leads me to approach with a Hybrid system upon more reflection. Since it will mix attributes. This will fit for a future work section perhaps, since it is a little ambitious for this project.
-
-## How The System Works
-
-Explain your design in plain language.
-
-Some prompts to answer:
-
-- What features does each `Song` use in your system
-  - For example: genre, mood, energy, tempo
-  Under song we would put in data such as its ID, name, the creator and the descriptions that the algorithm will use to sort and organize where it compares with other songs
-- What information does your `UserProfile` store
-The UserProfile stores the data about the user that profiles what music they listen to the most, their taste, and allows the algorithm to recommend based on current taste as well as direct user data such as hours listened to genre, or spent listening to a specific mood.
-- How does your `Recommender` compute a score for each song
-The recommender computes a score fore each song based on
--Energy
--Valence Procimity
--Mood
--Genre Match
--And Acousticness 
-
-the Final Score is the Weighted Sum
-- How do you choose which songs to recommend
-
-You can include a simple diagram or bullet list if helpful.
-
-All 18 songs are sorted by score, highest to lowest
-The top k are returned (default k=5)
-Ties are broken by sort order (stable sort — earlier in the CSV wins)
-
+# Applied AI System Project — Music Recommender with Reliability Evaluation
 
 ---
 
-## Getting Started
+## 1. Original Project (Modules 1–3)
 
-### Setup
+**What was the name of your original project and where can it be found?**
 
-1. Create a virtual environment (optional but recommended):
+[TheMusicRecommender]
 
+**In 2–3 sentences, what were the original goals and capabilities of that project?**
+
+[The goal of the original project was to provided the most accurate music recommendations based on manual preferences from the user. This algorithm would then measure reliably the music the user would be interested in listening to based on mood and the genre most importantly. With low energy levels, and high levels also playing a pivitol role in the assortment.]
+
+---
+
+## 2. Title and Summary
+
+**What does this project do?**
+
+[This project is a recommender system that scores songs against user taste profiles and includes a built in reliability evaluator in order to measure the trustworthiness of the recommendations.]
+
+**Why does it matter?**
+
+This project makes trust in the system measurable by checking whether results are consistent, whether a clear winner emerges, and whether all three scoring strategies agree. A recommender is only useful if you can rely on it — this project makes that reliability visible.
+
+---
+
+## 3. Architecture Overview
+
+![System Diagram](assets/system-diagram.png)
+
+**In your own words, walk through how data moves through your system from input to output.**
+
+[The ssytem takes user taste profiles and matches them against a catalog of 18 songs using the scoring strategies: energy-first, genre-first, and mood-first. The top results are selected and passed through a diversity reranker to avoid returning the same genre and mood repeatedly. Those recommendations then go the the evaluator that users determanism, scorespread, strategy agreement in order to return a confidence rating from low-high. The user recieves a table and a reliability report. I was originally going to set up an agent but decided to go in a different direction.]
+
+---
+
+## 4. Setup Instructions
+
+### Prerequisites
+- Python 3.9+
+- An Anthropic API key (only required for `--interactive` mode)
+
+### Steps
+
+1. Clone the repository:
    ```bash
-   python -m venv .venv
-   source .venv/bin/activate      # Mac or Linux
-   .venv\Scripts\activate         # Windows
+   git clone https://github.com/Smclau/applied-ai-system-project.git
+   cd applied-ai-system-project
+   ```
 
-2. Install dependencies
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-```bash
-pip install -r requirements.txt
-```
+3. Run batch mode (no API key needed):
+   ```bash
+   python3 -m src.main
+   ```
 
-3. Run the app:
+4. Run the reliability evaluator (no API key needed):
+   ```bash
+   python3 -m src.main --evaluate
+   ```
 
-```bash
-python -m src.main
-```
+5. Run interactive mode (requires API key):
+   ```bash
+   export ANTHROPIC_API_KEY=your_key_here
+   python3 -m src.main --interactive
+   ```
 
 ### Running Tests
-
-Run the starter tests with:
-
 ```bash
-pytest
+python3 -m pytest tests/ -v
 ```
 
-You can add more tests in `tests/test_recommender.py`.
-
 ---
 
-## Experiments You Tried
+## 5. Sample Interactions
 
-Use this section to document the experiments you ran. For example:
+### Example 1 — Batch Mode (`python3 -m src.main`)
 
-- What happened when you changed the weight on genre from 2.0 to 0.5
-- What happened when you added tempo or valence to the score
-- How did your system behave for different types of users
-
----
-
-## Limitations and Risks
-
-Summarize some limitations of your recommender.
-
-Examples:
-
-- It only works on a tiny catalog
-- It does not understand lyrics or language
-- It might over favor one genre or mood
-
-You will go deeper on this in your model card.
-
----
-
-## Reflection
-
-Read and complete `model_card.md`:
-
-[**Model Card**](model_card.md)
-
-Write 1 to 2 paragraphs here about what you learned:
-
-- about how recommenders turn data into predictions
-- about where bias or unfairness could show up in systems like this
-
-
----
-
-## 7. `model_card_template.md`
-
-Combines reflection and model card framing from the Module 3 guidance. :contentReference[oaicite:2]{index=2}  
-
-```markdown
-# 🎧 Model Card - Music Recommender Simulation
-
-## 1. Model Name
-
-Give your recommender a name, for example:
-
-> VibeFinder 1.0
-
----
-
-## 2. Intended Use
-
-- What is this system trying to do
-- Who is it for
-
-Example:
-
-> This model suggests 3 to 5 songs from a small catalog based on a user's preferred genre, mood, and energy level. It is for classroom exploration only, not for real users.
-
----
-
-## 3. How It Works (Short Explanation)
-
-Describe your scoring logic in plain language.
-
-- What features of each song does it consider
-Energy - High vs Low energy song. 
-Emotional tone - Is the songs emotional brightness close to what the mood suggest.
-Mood - How similar is the songs mood to the users
-Genre- Does the song belong to the genre?
-Acousticness - Is the song as acoustic or electronic as user wants.
-- What information about the user does it use
-The system uses favorite genre, favorite mood, target energy and target accoustiness in order to personalize the users experience and link them to the song data.
-- How does it turn those into a number
-Energy Proximity - Subtracts the difference between songs energy and the target. A perfect match = 35
-Valence Prox - Same idea but for emotional brightness
-Mood Similarity - Every mood sits at a position on an invisible mao defeined y energy and emotion
-Ganre match - yes or no, is it the correct genre. if not, then 0 points earned.
-Acousticness - Same as energy, worth 5 points
-
-Try to avoid code in this section, treat it like an explanation to a non programmer.
-
----
-
-## 4. Data
-
-Describe your dataset.
-
-- How many songs are in `data/songs.csv`
-- Did you add or remove any songs
-- What kinds of genres or moods are represented
-- Whose taste does this data mostly reflect
-
----
-
-## 5. Strengths
-
-Where does your recommender work well
-
-You can think about:
-- Situations where the top results "felt right"
-- Particular user profiles it served well
-- Simplicity or transparency benefits
-
----
-
-## 6. Limitations and Bias
-
-Where does your recommender struggle
-
-Some prompts:
-- Does it ignore some genres or moods
-- Does it treat all users as if they have the same taste shape
-- Is it biased toward high energy or one genre by default
-- How could this be unfair if used in a real product
-
----
-
-## 7. Evaluation
-
-How did you check your system
-
-Examples:
-- You tried multiple user profiles and wrote down whether the results matched your expectations
-- You compared your simulation to what a real app like Spotify or YouTube tends to recommend
-- You wrote tests for your scoring logic
-
-You do not need a numeric metric, but if you used one, explain what it measures.
-
----
-
-## 8. Future Work
-
-If you had more time, how would you improve this recommender
-
-Examples:
-
-- Add support for multiple users and "group vibe" recommendations
-- Balance diversity of songs instead of always picking the closest match
-- Use more features, like tempo ranges or lyric themes
-
----
-
-## 9. Personal Reflection
-
-A few sentences about what you learned:
-
-- What surprised you about how your system behaved
-- How did building this change how you think about real music recommenders
-- Where do you think human judgment still matters, even if the model seems "smart"
-
-![System Flowchart](image.png)
-![Terminal Output](TerminalSS.png)
-![User Profile Driven Song](User%20Profile%20Driven%20Song-2026-04-09-182113.png)
-![User Profile Driven Song#2](image-1.png)
-![User Profile Driven Song#3](image-2.png)
-
-## Terminal Output (All Profiles)
+Input: Chill Lofi Session profile scored across all three strategies.
 
 ```
-=== Chill Lofi Session ===
+=================================================================
+  Chill Lofi Session  [energy-first]
+=================================================================
+╭─────┬─────────────────────┬────────────────┬─────────┬────────────────────────────────────────────────────────────────────────────╮
+│   # │ Title               │ Artist         │   Score │ Why                                                                        │
+├─────┼─────────────────────┼────────────────┼─────────┼────────────────────────────────────────────────────────────────────────────┤
+│   1 │ Library Rain        │ Paper Lanterns │    0.97 │ lofi genre match, chill mood match, energy 0.35 ≈ your 0.38                │
+│   2 │ Focus Flow          │ LoRoom         │    0.96 │ lofi genre match, focused mood close to chill, energy 0.4 ≈ your 0.38      │
+│   3 │ Coffee Shop Stories │ Slow Stereo    │    0.92 │ jazz close to lofi, relaxed mood close to chill, energy 0.37 ≈ your 0.38   │
+│   4 │ Deep Blue           │ Aqua Drift     │    0.91 │ ambient close to lofi, dreamy mood close to chill, energy 0.33 ≈ your 0.38 │
+│   5 │ Spacewalk Thoughts  │ Orbit Bloom    │    0.91 │ ambient close to lofi, chill mood match, energy 0.28 ≈ your 0.38           │
+╰─────┴─────────────────────┴────────────────┴─────────┴────────────────────────────────────────────────────────────────────────────╯
 
-Library Rain - Score: 0.97
-Because: lofi genre match, chill mood match, energy 0.35 ≈ your 0.38
+=================================================================
+  Chill Lofi Session  [genre-first]
+=================================================================
+╭─────┬─────────────────────┬────────────────┬─────────┬────────────────────────────────────────────────────────────╮
+│   # │ Title               │ Artist         │   Score │ Why                                                        │
+├─────┼─────────────────────┼────────────────┼─────────┼────────────────────────────────────────────────────────────┤
+│   1 │ Library Rain        │ Paper Lanterns │    0.98 │ lofi genre match, chill mood, energy 0.35 ≈ your 0.38      │
+│   2 │ Focus Flow          │ LoRoom         │    0.98 │ lofi genre match, focused mood, energy 0.4 ≈ your 0.38     │
+│   3 │ Midnight Coding     │ LoRoom         │    0.83 │ lofi genre match, chill mood, energy 0.42 ≈ your 0.38      │
+│   4 │ Coffee Shop Stories │ Slow Stereo    │    0.75 │ jazz close to lofi, relaxed mood, energy 0.37 ≈ your 0.38  │
+│   5 │ Spacewalk Thoughts  │ Orbit Bloom    │    0.74 │ ambient close to lofi, chill mood, energy 0.28 ≈ your 0.38 │
+╰─────┴─────────────────────┴────────────────┴─────────┴────────────────────────────────────────────────────────────╯
 
-Focus Flow - Score: 0.96
-Because: lofi genre match, focused mood close to chill, energy 0.4 ≈ your 0.38
-
-Coffee Shop Stories - Score: 0.92
-Because: jazz close to lofi, relaxed mood close to chill, energy 0.37 ≈ your 0.38
-
-Deep Blue - Score: 0.91
-Because: ambient close to lofi, dreamy mood close to chill, energy 0.33 ≈ your 0.38
-
-Spacewalk Thoughts - Score: 0.91
-Because: ambient close to lofi, chill mood match, energy 0.28 ≈ your 0.38
-
-
-=== Focused Lofi Session ===
-
-Midnight Coding - Score: 0.98
-Because: lofi genre match, chill mood close to focused, energy 0.42 ≈ your 0.42
-
-Focus Flow - Score: 0.97
-Because: lofi genre match, focused mood match, energy 0.4 ≈ your 0.42
-
-Coffee Shop Stories - Score: 0.88
-Because: jazz close to lofi, relaxed mood close to focused, energy 0.37 ≈ your 0.42
-
-Deep Blue - Score: 0.87
-Because: ambient close to lofi, dreamy mood close to focused, energy 0.33 ≈ your 0.42
-
-Ember Trail - Score: 0.86
-Because: relaxed mood close to focused, energy 0.44 ≈ your 0.42
-
-
-=== Relaxed Lofi Session ===
-
-Library Rain - Score: 0.95
-Because: lofi genre match, chill mood close to relaxed, energy 0.35 ≈ your 0.34
-
-Coffee Shop Stories - Score: 0.94
-Because: jazz close to lofi, relaxed mood match, energy 0.37 ≈ your 0.34
-
-Deep Blue - Score: 0.94
-Because: ambient close to lofi, dreamy mood close to relaxed, energy 0.33 ≈ your 0.34
-
-Focus Flow - Score: 0.92
-Because: lofi genre match, focused mood close to relaxed, energy 0.4 ≈ your 0.34
-
-Spacewalk Thoughts - Score: 0.91
-Because: ambient close to lofi, chill mood close to relaxed, energy 0.28 ≈ your 0.34
-
-
-=== Pop Happy Session ===
-
-Sunrise City - Score: 0.99
-Because: pop genre match, happy mood match, energy 0.82 ≈ your 0.8
-
-Rooftop Lights - Score: 0.94
-Because: indie pop close to pop, happy mood match, energy 0.76 ≈ your 0.8
-
-Gym Hero - Score: 0.87
-Because: pop genre match
-
-Concrete Jungle - Score: 0.86
-Because: energetic mood close to happy, energy 0.85 ≈ your 0.8
-
-Pulse Wave - Score: 0.82
-Because: energetic mood close to happy, energy 0.88 ≈ your 0.8
-
-
-=== High-Energy Pop ===
-
-Gym Hero - Score: 0.95
-Because: pop genre match, intense mood close to energetic, energy 0.93 ≈ your 0.9
-
-Concrete Jungle - Score: 0.91
-Because: energetic mood match, energy 0.85 ≈ your 0.9
-
-Pulse Wave - Score: 0.91
-Because: energetic mood match, energy 0.88 ≈ your 0.9
-
-Sunrise City - Score: 0.91
-Because: pop genre match, happy mood close to energetic, energy 0.82 ≈ your 0.9
-
-Storm Runner - Score: 0.85
-Because: intense mood close to energetic, energy 0.91 ≈ your 0.9
-
-
-=== Deep Intense Rock ===
-
-Storm Runner - Score: 0.98
-Because: rock genre match, intense mood match, energy 0.91 ≈ your 0.92
-
-Pulse Wave - Score: 0.90
-Because: electronic close to rock, energetic mood close to intense, energy 0.88 ≈ your 0.92
-
-Gym Hero - Score: 0.88
-Because: intense mood match, energy 0.93 ≈ your 0.92
-
-Circuit Breaker - Score: 0.87
-Because: metal close to rock, angry mood close to intense, energy 0.97 ≈ your 0.92
-
-Night Drive Loop - Score: 0.84
-Because: synthwave close to rock, moody mood close to intense
-
-
-=== Sad Acoustic Folk ===
-
-Hollow Roads - Score: 0.99
-Because: folk genre match, sad mood match, energy 0.31 ≈ your 0.3
-
-Rainy Window - Score: 0.92
-Because: classical close to folk, sad mood match, energy 0.22 ≈ your 0.3
-
-Spacewalk Thoughts - Score: 0.84
-Because: ambient close to folk, energy 0.28 ≈ your 0.3
-
-Deep Blue - Score: 0.82
-Because: ambient close to folk, energy 0.33 ≈ your 0.3
-
-Library Rain - Score: 0.80
-Because: energy 0.35 ≈ your 0.3
+=================================================================
+  Chill Lofi Session  [mood-first]
+=================================================================
+╭─────┬─────────────────────┬────────────────┬─────────┬───────────────────────────────────────────────────╮
+│   # │ Title               │ Artist         │   Score │ Why                                               │
+├─────┼─────────────────────┼────────────────┼─────────┼───────────────────────────────────────────────────┤
+│   1 │ Library Rain        │ Paper Lanterns │    0.98 │ chill mood match, lofi genre                      │
+│   2 │ Focus Flow          │ LoRoom         │    0.96 │ focused mood close to chill, lofi genre           │
+│   3 │ Spacewalk Thoughts  │ Orbit Bloom    │    0.92 │ chill mood match, ambient close to lofi           │
+│   4 │ Coffee Shop Stories │ Slow Stereo    │    0.89 │ relaxed mood close to chill, jazz close to lofi   │
+│   5 │ Deep Blue           │ Aqua Drift     │    0.86 │ dreamy mood close to chill, ambient close to lofi │
+╰─────┴─────────────────────┴────────────────┴─────────┴───────────────────────────────────────────────────╯
 ```
+
+### Example 2 — Evaluate Mode (`python3 -m src.main --evaluate`)
+
+```
+=================================================================
+  Reliability Evaluation Report
+=================================================================
+╭──────────────────────┬─────────────────┬────────────────┬──────────────────┬──────────────╮
+│ Profile              │ Deterministic   │   Score Spread │ Strategy Agree   │ Confidence   │
+├──────────────────────┼─────────────────┼────────────────┼──────────────────┼──────────────┤
+│ Chill Lofi Session   │ ✓               │          0.061 │ 80%              │ Medium       │
+│ Focused Lofi Session │ ✓               │          0.116 │ 60%              │ Medium       │
+│ Relaxed Lofi Session │ ✓               │          0.039 │ 80%              │ Medium       │
+│ Pop Happy Session    │ ✓               │          0.163 │ 60%              │ Medium       │
+│ High-Energy Pop      │ ✓               │          0.099 │ 40%              │ Low          │
+│ Deep Intense Rock    │ ✓               │          0.138 │ 100%             │ High         │
+│ Sad Acoustic Folk    │ ✓               │          0.19  │ 60%              │ Medium       │
+╰──────────────────────┴─────────────────┴────────────────┴──────────────────┴──────────────╯
+
+  Summary: 1/7 High confidence  |  1/7 Low confidence  |  0 non-deterministic
+
+  NOTE: Low-confidence profiles have a narrow score spread or low strategy agreement.
+        Consider expanding the song catalog for those genres/moods.
+```
+
+### Example 3 — Interactive Mode (`python3 -m src.main --interactive`)
+
+*Requires an Anthropic API key. The user describes what they want in plain English,
+Claude parses it into a structured profile, and the recommender returns ranked results
+with a narrative explanation.*
+
+```
+You: something dreamy and calm for late night studying
+
+Profile detected: focused lofi (energy 0.40, acousticness 0.72)
+
+#1  Focus Flow          — LoRoom          (0.96)
+#2  Library Rain        — Paper Lanterns  (0.95)
+#3  Midnight Coding     — LoRoom          (0.93)
+#4  Deep Blue           — Aqua Drift      (0.91)
+#5  Spacewalk Thoughts  — Orbit Bloom     (0.88)
+
+Curator's note: These tracks were selected for their low energy and
+acoustic warmth, sitting in the focused-to-chill mood range — ideal
+for late-night concentration without being distracting.
+```
+
+## 6. Design Decisions
+
+**Why did you choose rule-based scoring instead of a machine learning model?**
+
+[Rule based scoring was chosen because it is transparent, fast to build and easy to tune without repairing training data. With a fixed catalog and one week timeline defining the scoring was more practicial than training a model. It also aids with the readme by making the system much clearer and explainable.. You can see exactly why a song scored the way it did.]
+
+**Why did you build three scoring strategies instead of one?**
+
+[Three strategies were vuilt so the system could serve different listener priorities. If someone cares about a genre then fine, or more about mood that is fine as well. If someone just wants raw energy then they also have that. Having all 3 makes the reliability evaluator more meaningful bc if all three return the same songs the recommendation is confident.]
+
+**What trade-offs did you make and why?**
+
+[The main trade-off was keeping the system simple and reproducable over building a fully integrated AI agent. Since the interatice claude powered mode does exist in the code base but requires API key and credits, I left it inactive and decided to design a project that can work without it. The 18 song catalogue was kept small to keep focus on the scoring and reliability logic rather than data management. Hardcoded profiles for real user behavior so the system cannot learn or adapt over time but anuone can clone and run it w/o setup friction.]
+
+---
+
+## 7. Testing Summary
+
+**What did you test and how?**
+
+[The project includes 11 automated test accross test_recommender.py that verifies that the recommender returns songs sorted by score and test_edge_cases that covers boundary conditions.]
+
+**What worked, what didn't, and what bugs did you find?**
+
+[All 7 profiles passed the determinism check with non-determininsitc results. Passing k=0 caused a zero division error and passing an unknown strategy silently fell back to energy first with no warning. ]
+
+**What did you learn from the testing process?**
+
+[I learned about how even when things are functional there are ways things can break even if you didnt think a user can break it that way. Theres always room for error in code.]
+
+---
+
+## 8. Reflection
+
+**What did this project teach you about AI systems and reliability?**
+
+[Building the evaluator taught me that a system can produce results that look correct on the surface but still be unreliable underneath. he High-Energy Pop profile returned recommendations every time, but the evaluator revealed that all three strategies only agreed on 40% of the songs meaning the output was sensitive to how you weighted the scoring. AI systems need built in ways to measure their own confidence, not just produce outputs.]
+
+**What would you do differently or add next if you had more time?**
+
+[Given more time, the most valuable addition would be fully activating the Claude-powered agent layer so users can describe what they want to listen to in plain English rather than selecting from hardcoded profiles.]
+
+---
+
+## 9. Responsible AI Reflection
+
+**What are the limitations or biases in your system?**
+
+[The most significant limitation is the small catalog of our 18 songs. This means the system cannot serve or niche or underrepresented genres and moods. If a user's taste doesn't closely match what's in the catalog, the recommendations will feel forced. The predefined profiles aalso assume a fixed set of listener types, which introduces bias.]
+
+**Could your AI be misused, and how would you prevent that?**
+
+[Possibly if someone manually crafted the profiles or the song catalog to always push certain songs to the top. Manipulating the song catalog to consistenly promote certain artist or songs over others. To prevent this we can limit the number of custom profiles a user can create at once validate that song attributes fall within expected ranges is the catalog can't be loaded with inflated scores. ]
+
+**What surprised you while testing your AI's reliability?**
+
+[The most surprising finding was that all 7 profiles passed the determinism check with zero failures across 70 total runs. Before running the evaluator I wasm't certain the scoring engine would behave consistently every time. It confirmed that pure math based scoring has no hidden randomness, which is something I assumed but neber actually verified until the test proved it.]
+
+**Describe your collaboration with AI during this project. Identify one instance when the AI gave a helpful suggestion and one instance where its suggestion was flawed or incorrect.**
+
+[The collaboration with AI was hands on but Claude suggested the structure for the README, design the reliability evaluator with its three checks and provided the mermaid code for the system architecture. All of which were genuinely useful and saved significant time. One helpful instance was the evaluator design itself: the idea of combining determinism, score spreadm and stratefy agreement into a signle confidence rating was a suggestion that meaningfully improved the project. while it did catch the Zero Division Error at k=0, it did not proactively consider all the ways the system can break that I have given thought. On a larger scale project this could cause ripples that would potentially break everything a be more costly. Which reinforced the importance of human review and judgement.]
+
+---
+
+## 10. Portfolio and Video Walkthrough
+
+**GitHub Repository:** https://github.com/Smclau/applied-ai-system-project
+
+**Video Walkthrough (Loom):** [Watch on Loom](https://www.loom.com/share/498717220d8f42d9960cc3840610c796)
+
+**Portfolio Reflection — What this project says about me as an AI engineer:**
+
+[This project tells me I still have alot to learn but that I can meet a deadline and produce a result when one is expected of me. I learned how complex things that appear simple to a user can actually be. I found out that as an AI engineer I could learn how these systems work with others in order to make a product that is abstract enough that user can use without worrying about dealing with core logic while being readable and structured enough to where edits and fixes in code can be made efficiently. I am excited for coding to come but I know with AI this will only make things even more competetive for the Engineers, but also more fun as building becomes much easier to structure.]
